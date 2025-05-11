@@ -39,6 +39,8 @@ public class ConsoleInterface {
                 Request.addRequest(id, city, bloodType, priority);
                 break;
             case 3:
+                id = askId();
+                Request.matchBlood(id);
                 break;
             case 4:
                 break;
