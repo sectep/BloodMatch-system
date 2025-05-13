@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Patient {
     static List<String> list = new ArrayList<>();
-    static String line, blood, city;
+    static String line;
 
     // method, which adds patients's information to data/requests.txt
     public static void addPatient(String id, String name, String bloodType, String city, int priority) {
@@ -32,12 +32,21 @@ public class Patient {
     // method, which matches the patiens id and city.
     public static boolean matchWithDonor(String id) {
         // check, if patient exists in out database.
-        blood = getBlood(id);
-        city = getCity(id);
-        if (Donor.matchBlood(id, blood, city))
-            return true;
+        String blood = getBlood(id);
+        String city = getCity(id);
+        if ((city == null) || (blood == null)) {
+            System.out.println("Patient with " + id + " doesn't exist.");
+            return false;
+        }
+        return Donor.matchBlood(id, blood, city);
+    }
 
-        return false;
+    // method, which matches the patiens id and city.
+    public static String matchForId(String id) {
+        // check, if patient exists in out database.
+        String blood = getBlood(id);
+        String city = getCity(id);
+        return Donor.matchForId(id, blood, city);
     }
 
     // method, which returns the city of the patient.
@@ -54,20 +63,20 @@ public class Patient {
     }
 
     // method, which returns the urgenct of the patiens.
-    public static Integer getUrgency(String id) {
+    public static int getUrgency(String id) {
         readToArray();
 
         // iterate through arraylist.
         for (int i = 0; i < list.size(); i++) {
 
-            // check, if array's id matches the patient's
+            // check, if array's id matches the patient's.
             if (list.get(i).startsWith("Id: ") && list.get(i).substring(4).equals(id)) {
-                String prior = list.get(i + 4).substring(11);
+                String prior = list.get(i + 4).substring(9);
                 return Integer.parseInt(prior);
 
             }
         }
-        return null;
+        return -1;
     }
 
     // method, which returns the bloodType of the patient.
@@ -77,7 +86,7 @@ public class Patient {
         // iterate through arraylist.
         for (int i = 0; i < list.size(); i++) {
 
-            // check, if array's id matches the patient's
+            // check, if array's id matches the patient's.
             if (list.get(i).startsWith("Id: ") && list.get(i).substring(4).equals(id)) {
                 return list.get(i + 2).substring(11); // return formater bloodtype.
             }
@@ -101,6 +110,34 @@ public class Patient {
             System.out.println("It seems, exception has been occurred: " + exc);
         }
         System.out.println("The donor already exists in our database!");
+    }
+
+    // method, which removes donor from the database.
+    public static void removePatient(String id) {
+        readToArray();
+        // iterate through list.
+        for (int i = 0; i < list.size(); i++) {
+
+            if (list.get(i).startsWith("Id: ") && list.get(i).substring(4).equals(id)) {
+                for (int j = 0; j < 6; j++) {
+                    list.remove(i);
+                }
+                rewritePatient();
+                return;
+            }
+        }
+    }
+
+    // method, which rewrites the information of 'requests.txt'.
+    private static void rewritePatient() {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter("BloodMatch\\data\\requests.txt"))) {
+            for (String l : list) {
+                out.write(l + "\n");
+            }
+        } catch (IOException exc) {
+            System.out.println("It seems, exception has been occurred: " + exc);
+        }
+
     }
 
     // method, which checks if donor's id exists.

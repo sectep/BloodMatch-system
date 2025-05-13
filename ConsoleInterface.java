@@ -3,7 +3,7 @@ package BloodMatch.src.bloodmatch;
 import java.util.Scanner;
 
 public class ConsoleInterface {
-    String id, name, email, city, bloodType;
+    String id, name, email, city, bloodType, donorId;
     int priority, option;
     Scanner console = new Scanner(System.in);
 
@@ -46,13 +46,19 @@ public class ConsoleInterface {
                 DataManager.showPatients();
                 break;
             case 5:
-                id = askId();
-                if (Patient.matchWithDonor(id)) {
-                    priority = Patient.getUrgency(id);
-                    PatientThread.createThread(id, priority);
-                    return;
-                }
-                System.out.println("No matches found in " + id);
+                do {
+                    System.out.println("\nTo quit, enter 'exit'.");
+                    id = askId();
+                    if (id.equalsIgnoreCase("exit"))
+                        break;
+
+                    // if patient's criteria matches with donor's, create a queue.
+                    if (Patient.matchWithDonor(id))
+                        getAndCreate(id);
+                } while (!(id.equalsIgnoreCase(bloodType)));
+
+                Scheduler.manageFLow();
+                Patient.removePatient(id);
                 break;
             case 6:
                 System.out.println("Terminating the program.");
@@ -127,5 +133,21 @@ public class ConsoleInterface {
 
         bloodType = console.nextLine();
         return BloodType.parseType(bloodType);
+    }
+
+    // method, which gets priority anc creates a thread.
+    private void getAndCreate(String id) {
+        priority = Patient.getUrgency(id);
+        donorId = Patient.matchForId(id);
+
+        // create thread if priority is valid.
+        if (priority != -1) {
+            PatientThread.createThread(id, donorId, priority);
+            return;
+        }
+
+        System.out.println("Priority isn't valid.");
+        return;
+
     }
 }

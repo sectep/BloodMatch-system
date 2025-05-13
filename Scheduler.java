@@ -11,10 +11,21 @@ public class Scheduler {
         startThreads();
         maxPriority();
         for (PatientThread thread : queue) {
-            if (thread.thrd.getPriority() == max)
+            if (thread.thrd.getPriority() == max) {
+                max = 0;
                 thread.requestResume();
-            else {
+            } else {
                 thread.requestSuspend();
+            }
+        }
+    }
+
+    // method, which resumes the next thread
+    static void triggerNext() {
+        for (PatientThread thread : queue) {
+            if (thread.suspended) {
+                thread.requestResume();
+                return;
             }
         }
     }
