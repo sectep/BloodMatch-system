@@ -1,34 +1,35 @@
 package BloodMatch.src.bloodmatch;
 
+// a class, which manipulates with athread.
 public class PatientThread implements Runnable {
-    private final Object lock = new Object();
     Thread thrd;
-    String donor;
+    String donor, patient;
     boolean suspended;
 
     // a constructor, which creates a Thread.
     PatientThread(String id, String dId) {
         donor = dId;
+        patient = id;
         thrd = new Thread(this, id);
         suspended = false;
     }
 
-    // create and start a request thread.
-    public static PatientThread createThread(String id, String dId, int priority) {
+    // method, which creates and starts a request thread.
+    public static void createThread(String id, String dId, int priority) {
         PatientThread myThrd = new PatientThread(id, dId);
         myThrd.thrd.setPriority(priority);
         Scheduler.queue.add(myThrd);
-        return myThrd;
+
     }
 
     // method, which manipulates with requests.
     public void run() {
 
         // implement the suspantion.
-        synchronized (lock) {
+        synchronized (this) {
             while (suspended) {
                 try {
-                    lock.wait();
+                    this.wait();
                 } catch (InterruptedException exc) {
                     System.out.println("It seems, exception has been occurred: " + exc);
                 }
@@ -38,8 +39,8 @@ public class PatientThread implements Runnable {
         System.out.println("\nMaking operation for " + thrd.getName() + "...");
         waitFor(1000);
         System.out.println("Operation for " + thrd.getName() + " is completed.");
-        Scheduler.queue.remove(this);
-        Scheduler.triggerNext();
+        Scheduler.queue.remove(this); // remove this thread from queue.
+        Scheduler.triggerNext(); // wake up next thread.
     }
 
     // method, which waits for a particular time.
@@ -53,15 +54,13 @@ public class PatientThread implements Runnable {
     }
 
     // method, which suspends the thread.
-    public void requestSuspend() {
+    public synchronized void requestSuspend() {
         suspended = true;
     }
 
     // method, which resumes the thread.
-    public void requestResume() {
+    public synchronized void requestResume() {
         suspended = false;
-        synchronized (lock) {
-            lock.notify();
-        }
+        notify();
     }
 }

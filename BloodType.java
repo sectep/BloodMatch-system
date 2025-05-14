@@ -1,5 +1,6 @@
 package BloodMatch.src.bloodmatch;
 
+// an enumitaror class, which holds and manages the blood data.
 enum BloodType {
     A_POS, A_NEG, B_POS, B_NEG, AB_POS, AB_NEG, O_POS, O_NEG;
 
@@ -13,7 +14,7 @@ enum BloodType {
         return "UNDEFINED";
     }
 
-    // method, which checks if blood type mathches in enuminator.
+    // method, which checks if blood type matches in enuminator.
     public static boolean typeExists(String type) {
         for (BloodType bloodType : BloodType.values()) {
             name = bloodType.toString();

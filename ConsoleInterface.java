@@ -1,7 +1,10 @@
 package BloodMatch.src.bloodmatch;
 
+import static BloodMatch.src.bloodmatch.Patient.*;
+import static BloodMatch.src.bloodmatch.Donor.*;
 import java.util.Scanner;
 
+// a class, which manages the console input data.
 public class ConsoleInterface {
     String id, name, email, city, bloodType, donorId;
     int priority, option;
@@ -17,9 +20,11 @@ public class ConsoleInterface {
     // method, which interracts with application, based on the choosen option.
     private void doOption(int what) {
         if (what == -1) {
-            System.out.println("Invalid type!");
+            System.out.println("Invalid input type!Write an integer.");
             return;
         }
+
+        System.out.println();
 
         // do specific task.
         switch (what) {
@@ -29,7 +34,7 @@ public class ConsoleInterface {
                 email = askEmail();
                 city = askCity();
                 bloodType = askBloodType();
-                Donor.addDonor(id, name, email, city, bloodType);
+                addDonor(id, name, email, city, bloodType);
                 break;
             case 2:
                 id = askId();
@@ -37,7 +42,7 @@ public class ConsoleInterface {
                 city = askCity();
                 bloodType = askBloodType();
                 priority = askPriority();
-                Patient.addPatient(id, name, city, bloodType, priority);
+                addPatient(id, name, city, bloodType, priority);
                 break;
             case 3:
                 DataManager.showDonors();
@@ -46,19 +51,19 @@ public class ConsoleInterface {
                 DataManager.showPatients();
                 break;
             case 5:
+                System.out.println("To quit the buffer, enter 'exit'");
                 do {
-                    System.out.println("\nTo quit, enter 'exit'.");
                     id = askId();
                     if (id.equalsIgnoreCase("exit"))
                         break;
 
                     // if patient's criteria matches with donor's, create a queue.
-                    if (Patient.matchWithDonor(id))
+                    if (matchWithDonor(id))
                         getAndCreate(id);
                 } while (!(id.equalsIgnoreCase(bloodType)));
 
                 Scheduler.manageFLow();
-                Patient.removePatient(id);
+                removePatient(id);
                 break;
             case 6:
                 System.out.println("Terminating the program.");
@@ -73,7 +78,7 @@ public class ConsoleInterface {
     private void display() {
         System.out.println("===BLOOD MATCH SYSTEM===");
         System.out.println("1. Add donor");
-        System.out.println("2. Add request");
+        System.out.println("2. Add patient");
         System.out.println("3. Show all donors");
         System.out.println("4. Show all requests");
         System.out.println("5. Match donors with requests");
@@ -135,12 +140,12 @@ public class ConsoleInterface {
         return BloodType.parseType(bloodType);
     }
 
-    // method, which gets priority anc creates a thread.
+    // method, which gets priority and creates a thread for patient.
     private void getAndCreate(String id) {
         priority = Patient.getUrgency(id);
         donorId = Patient.matchForId(id);
 
-        // create thread if priority is valid.
+        // create if thread's priority is valid.
         if (priority != -1) {
             PatientThread.createThread(id, donorId, priority);
             return;

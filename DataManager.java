@@ -1,5 +1,6 @@
 package BloodMatch.src.bloodmatch;
 
+// a class, which manipulates with donor's and patient's database
 public class DataManager {
 
     // method, which shows all donors in our database.

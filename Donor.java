@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// class, which manages the donor information.
+// a class, which manipulates with donors.txt file
 public class Donor {
     static List<String> list = new ArrayList<>();
     static String line;
@@ -12,8 +12,9 @@ public class Donor {
     // method, which adds donor's information to data/requests.txt
     public static void addDonor(String id, String name, String email, String city, String bloodType) {
         writeDonor(id, name, email, city, bloodType);
+
         System.out.println(name + " with id " + id + " has been" +
-                " written to out database successfully.");
+                " written to our database successfully.");
     }
 
     // method, which find the suitable donor for request.
@@ -98,38 +99,7 @@ public class Donor {
             System.out.println("It seems, exception has been occurred: " + exc);
         }
 
-        System.out.println("The donor already exists in our database!");
-    }
-
-    // method, which removes donor from the database.
-    public static void removeDonor(String id) {
-        readToArray();
-        if (idExists(id)) {
-            // iterate through list.
-            for (int i = 0; i < list.size(); i++) {
-
-                if (list.get(i).startsWith("Id: ") && list.get(i).equals(id)) {
-                    for (int j = 0; j < 6; j++) {
-                        list.remove(i);
-                    }
-                    System.out.println("Removed sucessfully.");
-                    rewriteDonor();
-                    return;
-                }
-            }
-        }
-    }
-
-    // method, which rewrites the information of donors.txt
-    private static void rewriteDonor() {
-
-        try (BufferedWriter out = new BufferedWriter(new FileWriter("BloodMatch\\data\\donors.txt"))) {
-            for (String l : list) {
-                out.write(l + "\n");
-            }
-        } catch (IOException exc) {
-            System.out.println("It seems, exception has been occurred: " + exc);
-        }
+        System.out.println(id + "already exists in our database!");
     }
 
     // method, which checks if donor's id exists.

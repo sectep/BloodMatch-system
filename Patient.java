@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// a class, which manipulates with patients.txt file
 public class Patient {
     static List<String> list = new ArrayList<>();
     static String line;
@@ -11,16 +12,16 @@ public class Patient {
     // method, which adds patients's information to data/requests.txt
     public static void addPatient(String id, String name, String bloodType, String city, int priority) {
         writeRequest(id, name, city, bloodType, priority);
+
         System.out.println(id + " has been written to " +
                 "our database successfully.");
-        return;
     }
 
     // method, which reads the file to array.
     public static void readToArray() {
         list.clear();
 
-        try (BufferedReader in = new BufferedReader(new FileReader("BloodMatch\\data\\requests.txt"))) {
+        try (BufferedReader in = new BufferedReader(new FileReader("BloodMatch\\data\\patients.txt"))) {
             while ((line = in.readLine()) != null) {
                 list.add(line);
             }
@@ -46,7 +47,11 @@ public class Patient {
         // check, if patient exists in out database.
         String blood = getBlood(id);
         String city = getCity(id);
-        return Donor.matchForId(id, blood, city);
+        if (!(blood == null || city == null)) {
+            return Donor.matchForId(id, blood, city);
+        }
+        System.out.println("Irrelevant information for blood and city.");
+        return null;
     }
 
     // method, which returns the city of the patient.
@@ -66,7 +71,7 @@ public class Patient {
     public static int getUrgency(String id) {
         readToArray();
 
-        // iterate through arraylist.
+        // iterate through the list
         for (int i = 0; i < list.size(); i++) {
 
             // check, if array's id matches the patient's.
@@ -83,12 +88,12 @@ public class Patient {
     private static String getBlood(String id) {
         readToArray();
 
-        // iterate through arraylist.
+        // iterate through the list.
         for (int i = 0; i < list.size(); i++) {
 
             // check, if array's id matches the patient's.
             if (list.get(i).startsWith("Id: ") && list.get(i).substring(4).equals(id)) {
-                return list.get(i + 2).substring(11); // return formater bloodtype.
+                return list.get(i + 2).substring(11); // return formated bloodtype.
             }
         }
         return null;
@@ -96,7 +101,7 @@ public class Patient {
 
     // method, which writes information to the database.
     private static void writeRequest(String id, String name, String bloodType, String city, int priority) {
-        try (BufferedWriter out = new BufferedWriter(new FileWriter("BloodMatch\\data\\requests.txt", true))) {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter("BloodMatch\\data\\patients.txt", true))) {
             if (!idExists(id)) {
                 out.write("Id: " + id + "\n");
                 out.write("Name: " + name + "\n");
@@ -109,15 +114,16 @@ public class Patient {
         } catch (IOException exc) {
             System.out.println("It seems, exception has been occurred: " + exc);
         }
-        System.out.println("The donor already exists in our database!");
+
+        System.out.println(id + "already exists in our database!");
     }
 
     // method, which removes donor from the database.
     public static void removePatient(String id) {
         readToArray();
+
         // iterate through list.
         for (int i = 0; i < list.size(); i++) {
-
             if (list.get(i).startsWith("Id: ") && list.get(i).substring(4).equals(id)) {
                 for (int j = 0; j < 6; j++) {
                     list.remove(i);
@@ -130,7 +136,7 @@ public class Patient {
 
     // method, which rewrites the information of 'requests.txt'.
     private static void rewritePatient() {
-        try (BufferedWriter out = new BufferedWriter(new FileWriter("BloodMatch\\data\\requests.txt"))) {
+        try (BufferedWriter out = new BufferedWriter(new FileWriter("BloodMatch\\data\\patients.txt"))) {
             for (String l : list) {
                 out.write(l + "\n");
             }
@@ -142,7 +148,7 @@ public class Patient {
 
     // method, which checks if donor's id exists.
     private static boolean idExists(String id) {
-        try (BufferedReader in = new BufferedReader(new FileReader("BloodMatch\\data\\requests.txt"))) {
+        try (BufferedReader in = new BufferedReader(new FileReader("BloodMatch\\data\\patients.txt"))) {
 
             // read to the end of the file.
             while (((line = in.readLine()) != null)) {
