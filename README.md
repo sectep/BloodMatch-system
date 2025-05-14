@@ -57,7 +57,7 @@ Enter id: D100
 Enter name: Alice Smith
 Enter email: alice@example.com
 Enter city: Denver
-Enter blood type: O-
+Enter blood type: O-NEG
 
 Alice Smith with id D100 has been written to our database successfully.
 
@@ -67,7 +67,7 @@ Choose: 2
 Enter id: P200
 Enter name: Bob Jones
 Enter city: Denver
-Enter blood type: O-
+Enter blood type: O-NEG
 Enter urgency(1-10): 8
 
 P200 has been written to our database successfully.
